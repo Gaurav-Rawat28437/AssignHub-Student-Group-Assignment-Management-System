@@ -15,6 +15,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import AdminStudents from "./pages/AdminStudents";
 import AdminGroups from "./pages/AdminGroups";
 import AdminAssignments from "./pages/AdminAssignments";
+import AdminSubmissions from "./pages/AdminSubmissions";
 
 function App() {
   const dispatch = useDispatch();
@@ -53,6 +54,7 @@ function App() {
           <Route path="/admin/students" element={<AdminStudents />} />
           <Route path="/admin/groups" element={<AdminGroups />} />
           <Route path="/admin/assignments" element={<AdminAssignments />} />
+          <Route path="/admin/submissions" element={<AdminSubmissions />} />
         </Route>
 
       </Routes>
