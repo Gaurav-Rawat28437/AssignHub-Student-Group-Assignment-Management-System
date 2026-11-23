@@ -14,7 +14,6 @@ const links = [
   ["/student", "Dashboard", LayoutDashboard],
   ["/student/groups", "My Groups", Users],
   ["/student/assignments", "Assignments", ClipboardList],
-  ["/student/profile", "Profile", User]
 ];
 
 function Sidebar() {

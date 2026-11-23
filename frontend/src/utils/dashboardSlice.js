@@ -33,6 +33,13 @@ export const fetchDashboardData = createAsyncThunk(
         error.response?.data?.message || "Failed to fetch dashboard data"
       );
     }
+  },
+  {
+    condition: (_, { getState }) => {
+      const status = getState().dashboard.status;
+
+      return status !== "loading" && status !== "succeeded";
+    }
   }
 );
 
