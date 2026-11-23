@@ -278,10 +278,54 @@ const deleteGroup = async (req, res) => {
   }
 };
 
+
+const getAllGroups = async (req, res) => {
+  try {
+    const groups = await prisma.group.findMany({
+      include: {
+        creator: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        },
+        members: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                email: true
+              }
+            }
+          }
+        }
+      },
+      orderBy: {
+        createdAt: "desc"
+      }
+    });
+
+    res.status(200).json({
+      message: "All groups fetched successfully",
+      count: groups.length,
+      groups
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Failed to fetch groups",
+      error: error.message
+    });
+  }
+};
+
+
 module.exports = {
   createGroup,
   addMember,
   getMyGroups,
   getGroupById,
-  deleteGroup
+  deleteGroup,
+  getAllGroups
 };

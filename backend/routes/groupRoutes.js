@@ -7,15 +7,25 @@ const {
   addMember,
   getMyGroups,
   getGroupById,
-  deleteGroup
+  deleteGroup,
+  getAllGroups
 } = require("../controllers/groupController");
 
-const { protect } = require("../middleware/authMiddleware");
+const {
+  protect,
+  adminOnly
+} = require("../middleware/authMiddleware");
 
 router.post("/", protect, createGroup);
+
 router.get("/my-groups", protect, getMyGroups);
+
+router.get("/all", protect, adminOnly, getAllGroups);
+
 router.get("/:groupId", protect, getGroupById);
+
 router.post("/:groupId/members", protect, addMember);
+
 router.delete("/:groupId", protect, deleteGroup);
 
 module.exports = router;
