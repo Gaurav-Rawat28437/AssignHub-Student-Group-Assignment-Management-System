@@ -1,5 +1,5 @@
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   ExternalLink,
@@ -7,7 +7,8 @@ import {
   Users,
   CheckCircle,
   Clock,
-  ClipboardList
+  ClipboardList,
+  X
 } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -20,6 +21,10 @@ import {
 
 function StudentAssignments() {
   const dispatch = useDispatch();
+
+  const [selectedSubmission, setSelectedSubmission] = useState(null);
+  const [confirmationStep, setConfirmationStep] = useState(0);
+  const [isConfirming, setIsConfirming] = useState(false);
 
   const { assignments, groups, status } = useSelector(
     (state) => state.dashboard
@@ -37,15 +42,45 @@ function StudentAssignments() {
     });
   };
 
-  const handleConfirm = async (assignmentId, groupId) => {
+  const openConfirmation = (assignment, group) => {
+    setSelectedSubmission({
+      assignmentId: assignment.id,
+      groupId: group.id,
+      groupName: group.name,
+      assignmentTitle: assignment.title
+    });
+
+    setConfirmationStep(1);
+  };
+
+  const closeConfirmation = () => {
+    if (isConfirming) return;
+
+    setSelectedSubmission(null);
+    setConfirmationStep(0);
+  };
+
+  const handleFinalConfirm = async () => {
+    if (!selectedSubmission || isConfirming) return;
+
     try {
-      const result = await dispatch(
-        confirmAssignment({ assignmentId, groupId })
+      setIsConfirming(true);
+
+      await dispatch(
+        confirmAssignment({
+          assignmentId: selectedSubmission.assignmentId,
+          groupId: selectedSubmission.groupId
+        })
       ).unwrap();
 
       toast.success("Submission confirmed successfully");
+
+      setSelectedSubmission(null);
+      setConfirmationStep(0);
     } catch (error) {
       toast.error(error || "Submission confirmation failed");
+    } finally {
+      setIsConfirming(false);
     }
   };
 
@@ -211,9 +246,7 @@ function StudentAssignments() {
                         </div>
 
                         <button
-                          onClick={() =>
-                            handleConfirm(assignment.id, group.id)
-                          }
+                          onClick={() => openConfirmation(assignment, group)}
                           disabled={isGroupConfirmed}
                           className={`shrink-0 rounded-lg px-3 py-2 text-xs font-medium transition ${
                             isGroupConfirmed
@@ -240,6 +273,103 @@ function StudentAssignments() {
               );
             })}
           </div>
+
+          {selectedSubmission && confirmationStep === 1 && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+              <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-lg font-semibold text-slate-900">
+                    Submission Confirmation
+                  </h2>
+
+                  <button
+                    onClick={closeConfirmation}
+                    className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
+
+                <p className="mt-4 text-sm leading-6 text-slate-600">
+                  Have you uploaded your assignment to the OneDrive submission link?
+                </p>
+
+                <p className="mt-2 text-sm font-medium text-slate-800">
+                  {selectedSubmission.assignmentTitle}
+                </p>
+
+                <div className="mt-6 flex justify-end gap-3">
+                  <button
+                    onClick={closeConfirmation}
+                    className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50"
+                  >
+                    No, Cancel
+                  </button>
+
+                  <button
+                    onClick={() => setConfirmationStep(2)}
+                    className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700"
+                  >
+                    Yes, I have submitted
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {selectedSubmission && confirmationStep === 2 && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+              <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-lg font-semibold text-slate-900">
+                    Final Confirmation
+                  </h2>
+
+                  <button
+                    onClick={closeConfirmation}
+                    disabled={isConfirming}
+                    className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700 disabled:opacity-50"
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
+
+                <p className="mt-4 text-sm leading-6 text-slate-600">
+                  Are you sure you want to confirm the submission of{" "}
+                  <span className="font-semibold text-slate-900">
+                    {selectedSubmission.assignmentTitle}
+                  </span>{" "}
+                  for group{" "}
+                  <span className="font-semibold text-slate-900">
+                    {selectedSubmission.groupName}
+                  </span>
+                  ?
+                </p>
+
+                <p className="mt-2 text-xs text-slate-500">
+                  Once confirmed, your group submission status will be updated.
+                </p>
+
+                <div className="mt-6 flex justify-end gap-3">
+                  <button
+                    onClick={() => setConfirmationStep(1)}
+                    disabled={isConfirming}
+                    className="rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50 disabled:opacity-50"
+                  >
+                    Back
+                  </button>
+
+                  <button
+                    onClick={handleFinalConfirm}
+                    disabled={isConfirming}
+                    className="rounded-lg bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    {isConfirming ? "Confirming..." : "Confirm Submission"}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </main>
       </div>
     </div>
