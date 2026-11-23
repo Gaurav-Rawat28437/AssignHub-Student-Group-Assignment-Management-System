@@ -229,9 +229,59 @@ const getGroupById = async (req, res) => {
   }
 };
 
+const deleteGroup = async (req, res) => {
+  try {
+    const groupId = Number(req.params.groupId);
+
+    if (!Number.isInteger(groupId) || groupId <= 0) {
+      return res.status(400).json({
+        message: "Invalid group ID"
+      });
+    }
+
+    const group = await prisma.group.findFirst({
+      where: {
+        id: groupId,
+        createdById: req.user.id
+      }
+    });
+
+    if (!group) {
+      return res.status(404).json({
+        message: "Group not found or you are not the group creator"
+      });
+    }
+
+    await prisma.$transaction([
+      prisma.submission.deleteMany({
+        where: { groupId }
+      }),
+      prisma.assignmentGroup.deleteMany({
+        where: { groupId }
+      }),
+      prisma.groupMember.deleteMany({
+        where: { groupId }
+      }),
+      prisma.group.delete({
+        where: { id: groupId }
+      })
+    ]);
+
+    res.status(200).json({
+      message: "Group deleted successfully"
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Failed to delete group",
+      error: error.message
+    });
+  }
+};
+
 module.exports = {
   createGroup,
   addMember,
   getMyGroups,
-  getGroupById
+  getGroupById,
+  deleteGroup
 };

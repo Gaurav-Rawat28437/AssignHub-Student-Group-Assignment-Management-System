@@ -67,7 +67,7 @@ function StudentAssignments() {
     <div className="flex min-h-screen bg-[#F8FAFC]">
       <Sidebar />
 
-      <div className="min-w-0 flex-1">
+      <div className="ml-[76px] min-w-0 flex-1 transition-all duration-300 peer-hover:ml-[260px]">
         <StudentNavbar />
 
         <main className="p-6 sm:p-8">

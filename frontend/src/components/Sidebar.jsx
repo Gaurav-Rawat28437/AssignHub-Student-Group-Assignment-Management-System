@@ -19,9 +19,9 @@ const links = [
 
 function Sidebar() {
   return (
-    <aside className="group relative min-h-screen w-[76px] hover:w-[260px] shrink-0 bg-white border-r border-[#E5E7EB] transition-all duration-300 ease-in-out overflow-hidden">
-
-      {/* Logo */}
+<aside className="group peer fixed left-0 top-0 z-40 h-screen w-[76px] shrink-0 overflow-hidden border-r border-[#E5E7EB] bg-white transition-all duration-300 ease-in-out hover:w-[260px]">
+    
+          {/* Logo */}
       <div className="flex h-16 items-center gap-3 border-b border-[#E5E7EB] px-5 min-w-[260px]">
 
         <div className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-slate-900 text-white">

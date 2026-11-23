@@ -1,7 +1,13 @@
 
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
-import { getMyGroups } from "../services/groupService";
+import {
+  getMyGroups,
+  createGroup,
+  addGroupMember,
+  deleteGroup
+} from "../services/groupService";
+
 import {
   getMyAssignments,
   confirmAssignmentSubmission
@@ -19,20 +25,67 @@ export const fetchDashboardData = createAsyncThunk(
       return {
         groups: groupResponse.groups || [],
         assignments: assignmentResponse.assignments || [],
-        groupCount: groupResponse.count,
-        assignmentCount: assignmentResponse.count
+        groupCount: groupResponse.count || 0,
+        assignmentCount: assignmentResponse.count || 0
       };
     } catch (error) {
       return rejectWithValue(
         error.response?.data?.message || "Failed to fetch dashboard data"
       );
     }
-  },
-  {
-    condition: (_, { getState }) => {
-      const status = getState().dashboard.status;
+  }
+);
 
-      return status !== "loading" && status !== "succeeded";
+export const createStudentGroup = createAsyncThunk(
+  "dashboard/createStudentGroup",
+  async (name, { rejectWithValue }) => {
+    try {
+      const response = await createGroup(name);
+      const group = response.group;
+
+      return {
+        ...group,
+        creator:
+          group.members?.find(
+            (member) => member.userId === group.createdById
+          )?.user || null
+      };
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to create group"
+      );
+    }
+  }
+);
+
+export const addStudentGroupMember = createAsyncThunk(
+  "dashboard/addStudentGroupMember",
+  async ({ groupId, email }, { rejectWithValue }) => {
+    try {
+      const response = await addGroupMember(groupId, email);
+
+      return {
+        groupId,
+        member: response.member
+      };
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to add member"
+      );
+    }
+  }
+);
+
+export const deleteStudentGroup = createAsyncThunk(
+  "dashboard/deleteStudentGroup",
+  async (groupId, { rejectWithValue }) => {
+    try {
+      await deleteGroup(groupId);
+      return groupId;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to delete group"
+      );
     }
   }
 );
@@ -96,6 +149,50 @@ const dashboardSlice = createSlice({
       .addCase(fetchDashboardData.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
+      })
+
+      .addCase(createStudentGroup.fulfilled, (state, action) => {
+        const group = action.payload;
+
+        const alreadyExists = state.groups.some(
+          (item) => item.id === group.id
+        );
+
+        if (!alreadyExists) {
+          state.groups.unshift(group);
+        }
+
+        state.groupCount = state.groups.length;
+      })
+
+      .addCase(addStudentGroupMember.fulfilled, (state, action) => {
+        const { groupId, member } = action.payload;
+
+        const group = state.groups.find(
+          (item) => item.id === groupId
+        );
+
+        if (group && member) {
+          if (!group.members) {
+            group.members = [];
+          }
+
+          const alreadyExists = group.members.some(
+            (item) => item.userId === member.userId
+          );
+
+          if (!alreadyExists) {
+            group.members.push(member);
+          }
+        }
+      })
+
+      .addCase(deleteStudentGroup.fulfilled, (state, action) => {
+        state.groups = state.groups.filter(
+          (group) => group.id !== action.payload
+        );
+
+        state.groupCount = state.groups.length;
       })
 
       .addCase(confirmAssignment.fulfilled, (state, action) => {
