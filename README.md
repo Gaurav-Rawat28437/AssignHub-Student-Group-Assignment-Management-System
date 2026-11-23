@@ -372,7 +372,9 @@ The application currently runs locally. Deployment is planned for a later stage.
 
 Live Demo: Coming Soon
 
-Demo Video: Coming Soon
+## Demo Video
+
+[Watch AssignHub Demo](https://drive.google.com/file/d/1dfKe2zGo53XcxYgvkHg0iqZZSDGBRtOH/view?usp=sharing)
 
 ## Author
 

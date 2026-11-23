@@ -11,8 +11,8 @@ function Login() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+    const [email, setEmail] = useState("admin@assignhub.com");
+    const [password, setPassword] = useState("Admin@123");
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
