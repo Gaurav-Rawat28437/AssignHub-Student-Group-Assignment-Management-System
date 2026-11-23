@@ -1,3 +1,4 @@
+
 require("dotenv").config();
 
 const prisma = require("../config/prisma");
@@ -5,8 +6,13 @@ const bcrypt = require("bcryptjs");
 
 const createAdmin = async () => {
   try {
-    const email = "admin@assignhub.com";
-    const password = "Admin@123";
+    const email = process.env.ADMIN_EMAIL;
+    const password = process.env.ADMIN_PASSWORD;
+
+    if (!email || !password) {
+      console.log("Admin environment variables not configured. Skipping.");
+      return;
+    }
 
     const existingAdmin = await prisma.user.findUnique({
       where: { email }
@@ -19,7 +25,7 @@ const createAdmin = async () => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const admin = await prisma.user.create({
+    await prisma.user.create({
       data: {
         name: "AssignHub Admin",
         email,
@@ -28,9 +34,10 @@ const createAdmin = async () => {
       }
     });
 
-    console.log("Admin created successfully:", admin.email);
+    console.log("Admin created successfully:", email);
   } catch (error) {
-    console.log("Error creating admin:", error.message);
+    console.error("Error creating admin:", error);
+    process.exitCode = 1;
   } finally {
     await prisma.$disconnect();
   }
