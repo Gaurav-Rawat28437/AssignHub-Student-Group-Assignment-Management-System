@@ -2,7 +2,10 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 import { getMyGroups } from "../services/groupService";
-import { getMyAssignments } from "../services/assignmentService";
+import {
+  getMyAssignments,
+  confirmAssignmentSubmission
+} from "../services/assignmentService";
 
 export const fetchDashboardData = createAsyncThunk(
   "dashboard/fetchDashboardData",
@@ -30,6 +33,24 @@ export const fetchDashboardData = createAsyncThunk(
       const status = getState().dashboard.status;
 
       return status !== "loading" && status !== "succeeded";
+    }
+  }
+);
+
+export const confirmAssignment = createAsyncThunk(
+  "dashboard/confirmAssignment",
+  async ({ assignmentId, groupId }, { rejectWithValue }) => {
+    try {
+      const response = await confirmAssignmentSubmission(
+        assignmentId,
+        groupId
+      );
+
+      return response.submission;
+    } catch (error) {
+      return rejectWithValue(
+        error.response?.data?.message || "Submission confirmation failed"
+      );
     }
   }
 );
@@ -75,6 +96,32 @@ const dashboardSlice = createSlice({
       .addCase(fetchDashboardData.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
+      })
+
+      .addCase(confirmAssignment.fulfilled, (state, action) => {
+        const submission = action.payload;
+
+        const assignment = state.assignments.find(
+          (item) => item.id === submission.assignmentId
+        );
+
+        if (assignment) {
+          if (!assignment.submissions) {
+            assignment.submissions = [];
+          }
+
+          const existingIndex = assignment.submissions.findIndex(
+            (item) =>
+              item.groupId === submission.groupId &&
+              item.studentId === submission.studentId
+          );
+
+          if (existingIndex >= 0) {
+            assignment.submissions[existingIndex] = submission;
+          } else {
+            assignment.submissions.push(submission);
+          }
+        }
       });
   }
 });
