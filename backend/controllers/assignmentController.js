@@ -281,6 +281,7 @@ const updateAssignment = async (req, res) => {
 };
 
 
+
 const getMyAssignments = async (req, res) => {
   try {
     const assignments = await prisma.assignment.findMany({
@@ -321,6 +322,11 @@ const getMyAssignments = async (req, res) => {
               }
             }
           }
+        },
+        submissions: {
+          where: {
+            studentId: req.user.id
+          }
         }
       },
       orderBy: {
@@ -328,11 +334,17 @@ const getMyAssignments = async (req, res) => {
       }
     });
 
+    const formattedAssignments = assignments.map((assignment) => ({
+      ...assignment,
+      submissions: assignment.submissions
+    }));
+
     res.status(200).json({
       message: "My assignments fetched successfully",
-      count: assignments.length,
-      assignments
+      count: formattedAssignments.length,
+      assignments: formattedAssignments
     });
+
   } catch (error) {
     res.status(500).json({
       message: "Failed to fetch assignments",
@@ -340,6 +352,7 @@ const getMyAssignments = async (req, res) => {
     });
   }
 };
+
 
 
 const confirmSubmission = async (req, res) => {

@@ -1,10 +1,12 @@
+
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+import { LogOut } from "lucide-react";
 
 import { logoutUser } from "../services/authService";
 import { logout } from "../utils/userSlice";
-import { LogOut } from "lucide-react";
+import { clearDashboardData } from "../utils/dashboardSlice";
 
 function LogoutButton() {
   const dispatch = useDispatch();
@@ -15,6 +17,8 @@ function LogoutButton() {
       const response = await logoutUser();
 
       dispatch(logout());
+      dispatch(clearDashboardData());
+
       toast.success(response.message || "Logged out successfully");
       navigate("/login");
     } catch (error) {
@@ -25,18 +29,18 @@ function LogoutButton() {
   };
 
   return (
-  <button
-    onClick={handleLogout}
-    title="Logout"
-    className="flex items-center gap-4 w-full min-w-[220px] px-3 py-3 rounded-xl text-gray-400 hover:bg-red-500/10 hover:text-red-400 transition-all duration-200"
-  >
-    <LogOut size={21} className="shrink-0" />
+    <button
+      onClick={handleLogout}
+      title="Logout"
+      className="flex items-center gap-4 w-full min-w-[220px] px-3 py-3 rounded-xl text-gray-400 hover:bg-red-500/10 hover:text-red-400 transition-all duration-200"
+    >
+      <LogOut size={21} className="shrink-0" />
 
-    <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap font-medium">
-      Logout
-    </span>
-  </button>
-);
+      <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap font-medium">
+        Logout
+      </span>
+    </button>
+  );
 }
 
 export default LogoutButton;
