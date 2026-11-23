@@ -8,6 +8,7 @@ import { fetchUser } from "./utils/userSlice";
 import Login from "./pages/Login";
 import ProtectedRoute from "./components/ProtectedRoute";
 import LogoutButton from "./components/LogoutButton";
+import StudentDashboard from "./pages/StudentDashboard";
 
 function App() {
   const dispatch = useDispatch();
@@ -28,12 +29,7 @@ function App() {
         <Route element={<ProtectedRoute role="STUDENT" />}>
           <Route
             path="/student"
-            element={
-              <div className="p-6">
-                <h1 className="text-2xl font-bold mb-4">Student Dashboard</h1>
-                <LogoutButton />
-              </div>
-            }
+            element={<StudentDashboard />}
           />
         </Route>
 
