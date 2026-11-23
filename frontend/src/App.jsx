@@ -10,6 +10,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import LogoutButton from "./components/LogoutButton";
 import StudentDashboard from "./pages/StudentDashboard";
 import StudentAssignments from "./pages/StudentAssignments";
+import StudentGroups from "./pages/StudentGroups";
 
 function App() {
   const dispatch = useDispatch();
@@ -36,6 +37,10 @@ function App() {
           <Route
             path="/student/assignments"
             element={<StudentAssignments />}
+          />
+
+          <Route path="/student/groups"
+            element={<StudentGroups />}
           />
         </Route>
 
