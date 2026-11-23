@@ -16,6 +16,7 @@ import AdminStudents from "./pages/AdminStudents";
 import AdminGroups from "./pages/AdminGroups";
 import AdminAssignments from "./pages/AdminAssignments";
 import AdminSubmissions from "./pages/AdminSubmissions";
+import Register from "./pages/Register";
 
 function App() {
   const dispatch = useDispatch();
@@ -30,6 +31,7 @@ function App() {
 
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
 
         <Route path="/" element={<Navigate to="/login" replace />} />
 

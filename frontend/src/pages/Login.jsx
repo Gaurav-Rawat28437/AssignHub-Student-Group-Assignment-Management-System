@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { useDispatch } from "react-redux";
@@ -62,6 +61,8 @@ function Login() {
                 </p>
 
                 <form onSubmit={handleLogin} className="space-y-5">
+
+                    {/* Email */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                             Email
@@ -77,6 +78,7 @@ function Login() {
                         />
                     </div>
 
+                    {/* Password */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                             Password
@@ -106,10 +108,14 @@ function Login() {
                         </div>
                     </div>
 
+                    {/* Error */}
                     {error && (
-                        <p className="text-red-500 text-sm">{error}</p>
+                        <p className="text-red-500 text-sm">
+                            {error}
+                        </p>
                     )}
 
+                    {/* Login Button */}
                     <button
                         type="submit"
                         disabled={loading}
@@ -117,7 +123,20 @@ function Login() {
                     >
                         {loading ? "Logging in..." : "Login"}
                     </button>
+
                 </form>
+
+                {/* Register Link */}
+                <p className="text-center text-sm text-gray-500 mt-6">
+                    Don't have an account?{" "}
+                    <span
+                        onClick={() => navigate("/register")}
+                        className="text-blue-600 font-semibold cursor-pointer hover:underline"
+                    >
+                        Register now
+                    </span>
+                </p>
+
             </div>
         </div>
     );
