@@ -1,0 +1,92 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  STUDENT
+  ADMIN
+}
+
+model User {
+  id           Int           @id @default(autoincrement())
+  name         String
+  email        String        @unique
+  password     String
+  role         Role          @default(STUDENT)
+  createdAt    DateTime      @default(now())
+
+  createdGroups Group[]      @relation("GroupCreator")
+  memberships   GroupMember[]
+  submissions   Submission[]
+  assignments   Assignment[] @relation("AssignmentCreator")
+}
+
+model Group {
+  id          Int           @id @default(autoincrement())
+  name        String
+  createdAt   DateTime      @default(now())
+  createdById Int
+
+  creator     User          @relation("GroupCreator", fields: [createdById], references: [id])
+  members     GroupMember[]
+  assignments AssignmentGroup[]
+  submissions Submission[]
+}
+
+model GroupMember {
+  id      Int   @id @default(autoincrement())
+  userId  Int
+  groupId Int
+
+  user    User  @relation(fields: [userId], references: [id])
+  group   Group @relation(fields: [groupId], references: [id])
+
+  @@unique([userId, groupId])
+}
+
+model Assignment {
+  id          Int               @id @default(autoincrement())
+  title       String
+  description String
+  fileUrl     String
+  dueDate     DateTime
+  assignToAll Boolean           @default(false)
+  createdAt   DateTime          @default(now())
+  createdById Int
+
+  creator     User              @relation("AssignmentCreator", fields: [createdById], references: [id])
+  groups      AssignmentGroup[]
+  submissions Submission[]
+}
+
+model AssignmentGroup {
+  id           Int        @id @default(autoincrement())
+  assignmentId Int
+  groupId      Int
+
+  assignment   Assignment @relation(fields: [assignmentId], references: [id])
+  group        Group      @relation(fields: [groupId], references: [id])
+
+  @@unique([assignmentId, groupId])
+}
+
+model Submission {
+  id           Int        @id @default(autoincrement())
+  assignmentId Int
+  groupId      Int
+  studentId    Int
+  confirmed    Boolean    @default(false)
+  confirmedAt  DateTime?
+
+  assignment   Assignment @relation(fields: [assignmentId], references: [id])
+  group        Group      @relation(fields: [groupId], references: [id])
+  student      User       @relation(fields: [studentId], references: [id])
+
+  @@unique([assignmentId, groupId, studentId])
+}
