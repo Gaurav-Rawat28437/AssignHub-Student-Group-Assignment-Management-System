@@ -368,9 +368,13 @@ AssignHub currently includes the following implemented functionality:
 
 ## Deployment
 
-The application currently runs locally. Deployment is planned for a later stage.
+The AssignHub application is successfully deployed.
 
-Live Demo: Coming Soon
+- **Live Application:** https://assign-hub-student-group-assignment.vercel.app/
+- **Backend API:** https://assignhub-student-group-assignment.onrender.com/
+- **Frontend Hosting:** Vercel
+- **Backend Hosting:** Render
+- **Database:** Neon PostgreSQL
 
 ## Demo Video
 
