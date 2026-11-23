@@ -34,4 +34,37 @@ const getProfile = async (req, res) => {
   }
 };
 
-module.exports = { getProfile };
+const getAllStudents = async (req, res) => {
+  try {
+    const students = await prisma.user.findMany({
+      where: {
+        role: "STUDENT"
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        createdAt: true
+      },
+      orderBy: {
+        createdAt: "desc"
+      }
+    });
+
+    res.status(200).json({
+      message: "Students fetched successfully",
+      count: students.length,
+      students
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Failed to fetch students",
+      error: error.message
+    });
+  }
+};
+
+module.exports = {
+  getProfile,
+  getAllStudents
+};

@@ -12,6 +12,7 @@ import StudentDashboard from "./pages/StudentDashboard";
 import StudentAssignments from "./pages/StudentAssignments";
 import StudentGroups from "./pages/StudentGroups";
 import AdminDashboard from "./pages/AdminDashboard";
+import AdminStudents from "./pages/AdminStudents";
 
 function App() {
   const dispatch = useDispatch();
@@ -47,6 +48,7 @@ function App() {
 
         <Route element={<ProtectedRoute role="ADMIN" />}>
           <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/admin/students" element={<AdminStudents />} />
         </Route>
       </Routes>
     </BrowserRouter>
