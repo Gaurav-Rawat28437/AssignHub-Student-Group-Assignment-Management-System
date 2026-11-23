@@ -11,6 +11,7 @@ import LogoutButton from "./components/LogoutButton";
 import StudentDashboard from "./pages/StudentDashboard";
 import StudentAssignments from "./pages/StudentAssignments";
 import StudentGroups from "./pages/StudentGroups";
+import AdminDashboard from "./pages/AdminDashboard";
 
 function App() {
   const dispatch = useDispatch();
@@ -45,15 +46,7 @@ function App() {
         </Route>
 
         <Route element={<ProtectedRoute role="ADMIN" />}>
-          <Route
-            path="/admin"
-            element={
-              <div className="p-6">
-                <h1 className="text-2xl font-bold mb-4">Admin Dashboard</h1>
-                <LogoutButton />
-              </div>
-            }
-          />
+          <Route path="/admin" element={<AdminDashboard />} />
         </Route>
       </Routes>
     </BrowserRouter>
